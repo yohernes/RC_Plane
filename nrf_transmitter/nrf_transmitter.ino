@@ -3,7 +3,6 @@
 #include <RF24.h>
 
 RF24 radio(7, 8); // CE, CSN
-
 const byte address[6] = "00001";
 
 void setup() {
@@ -12,19 +11,23 @@ void setup() {
   radio.openWritingPipe(address);
   radio.setPALevel(RF24_PA_MIN);
   radio.stopListening();
-  Serial.println("starting...");
-  if (radio.available())
-  {
-      Serial.println("radio available");
-
-  }
+  Serial.println("Transmitter Ready");
 }
 
 void loop() {
-  const char text[] = "Hello world";
-  if(radio.write(&text, sizeof(text)))
-  {
-      Serial.println("sending");
-  };
+  int joystickY = analogRead(A1);
+  int mappedValue = map(joystickY, 0, 1023, 0, 180);
+
+  Serial.print("Sending: ");
+  Serial.println(mappedValue);
+
+  bool success = radio.write(&mappedValue, sizeof(mappedValue));
+
+  if (success) {
+    Serial.println("✅ Sent successfully");
+  } else {
+    Serial.println("❌ Send failed!");
+  }
+
   delay(1000);
 }
