@@ -4,7 +4,10 @@
 
 #define CE_PIN 7
 #define CSN_PIN 8
-#define JOYSTICK_Y A0  // Joystick Y-axis
+#define LEFT_JOYSTICK_X A0  // Joystick Y-axis
+#define RIGHT_JOYSTICK_X A1
+#define RIGHT_JOYSTICK_Y A2
+
 
 RF24 radio(CE_PIN, CSN_PIN);
 const byte address[6] = "00001"; // Address for communication
@@ -18,15 +21,24 @@ void setup() {
 }
 
 void loop() {
-    int joyValue = analogRead(JOYSTICK_Y); // Read joystick Y-axis
-    joyValue = map(joyValue, 0, 1023, 0, 180); // Convert joystick value to 0-180
+    int LXValue = analogRead(LEFT_JOYSTICK_X); // Read joystick Y-axis
+    LXValue = map(LXValue, 0, 1023, 0, 180); // Convert joystick value to 0-180
+    
+    int RXValue = analogRead(RIGHT_JOYSTICK_X);
+    RXValue = map(RXValue, 0, 1023, 0, 180);
 
-    // Print joystick value to Serial Monitor
-    Serial.print("Joystick Y: ");
-    Serial.println(joyValue);
+    int RYValue = analogRead(RIGHT_JOYSTICK_Y);
+    RYValue = map(RXValue, 0, 1023, 0, 180);
+
+
+    char packet[50];
+    // Print joystick values to Serial Monitor
+    snprintf(packet, sizeof(packet), "%d,%d,%d", LXValue, RXValue, RYValue);
+
+    Serial.println(packet);
 
     // Send joystick value via NRF24
-    bool success = radio.write(&joyValue, sizeof(joyValue));
+    bool success = radio.write(&packet, sizeof(packet));
 
     // Print transmission status
     if (success) {
