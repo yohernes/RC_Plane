@@ -13,7 +13,7 @@ void setup() {
     Serial.begin(9600);
     radio.begin();
     radio.openWritingPipe(address);
-    radio.setPALevel(RF24_PA_MIN);
+    radio.setPALevel(RF24_PA_MAX);
     radio.stopListening(); // Set as transmitter
 }
 
